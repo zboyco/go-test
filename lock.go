@@ -11,6 +11,7 @@ type model struct {
 	mutex sync.Mutex
 }
 
+// main 测试互斥锁
 func main() {
 	fmt.Println("测试开始")
 
