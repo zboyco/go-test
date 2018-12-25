@@ -17,12 +17,15 @@ type User struct {
 	Flag      int
 }
 
+var engine *xorm.Engine
+var err error
+var affected int64
+var has bool
+
 func main() {
 
-	var engine *xorm.Engine
-
 	// 新建orm引擎
-	engine, err := xorm.NewEngine("mysql", "root:tamanya233@tcp(192.168.2.100:3307)/XormTest?charset=utf8")
+	engine, err = xorm.NewEngine("mysql", "root:tamanya233@tcp(192.168.2.100:3307)/XormTest?charset=utf8")
 
 	// 有错退出
 	checkErr(err)
@@ -31,28 +34,28 @@ func main() {
 	engine.SetMapper(core.SameMapper{})
 
 	// 插入
-	insertID := insert(engine)
+	insertID := insert()
 
-	// 查询
-	query(engine)
+	// // 查询
+	query()
 
-	// 存在
-	exist(engine)
+	// // 存在
+	exist()
 
-	// 更新
-	update(engine)
+	// // 更新
+	update()
 
-	//删除
-	del(engine, insertID)
+	// //删除
+	del(insertID)
 }
 
-func insert(engine *xorm.Engine) int {
+func insert() int {
 
 	// 事务
 	session := engine.NewSession()
 	defer session.Close()
 
-	err := session.Begin()
+	err = session.Begin()
 	checkErr(err)
 
 	// 插入数据
@@ -61,32 +64,33 @@ func insert(engine *xorm.Engine) int {
 		UserPwd:  "test",
 		Flag:     1,
 	}
-	affected, err := engine.Insert(&newUser)
+	affected, err = engine.Insert(&newUser)
 	if err != nil {
 		session.Rollback()
 		checkErr(err)
 	}
-	err1 := session.Commit()
-	checkErr(err1)
+	err = session.Commit()
+	checkErr(err)
 	log.Println("新插入", affected, "条数据,ID:", newUser.ID)
 	return newUser.ID
 }
 
-func query(engine *xorm.Engine) {
+func query() {
+
 	var user User
 	// ID获取单条
 	engine.ID(1).Get(&user)
 	log.Println("查出数据,ID:", user.ID)
 
 	// where获取单条
-	has, err := engine.Where("UserName = ?", "root").Get(&user)
+	has, err = engine.Where("UserName = ?", "root").Get(&user)
 	checkErr(err)
 	log.Println("查出数据", has, "ID:", user.ID)
 
 	// user结构体中已有的非空数据来获得单条数据
-	user1 := User{UserName: "root"}
-	engine.Get(&user1)
-	log.Println("查出数据,ID:", user1.ID)
+	user = User{UserName: "root"}
+	engine.Get(&user)
+	log.Println("查出数据,ID:", user.ID)
 
 	// find 获取多条 where
 	var users []User
@@ -105,35 +109,35 @@ func query(engine *xorm.Engine) {
 
 	// find map
 	usersMap := make(map[int]User, 0)
-	err1 := engine.Find(&usersMap)
-	checkErr(err1)
+	err = engine.Find(&usersMap)
+	checkErr(err)
 	for _, item := range usersMap {
 		log.Println("查出数据:", item)
 	}
 
 	// find 查询单个字段
 	var ids []int
-	err2 := engine.Table(new(User)).Cols("ID").Find(&ids)
-	checkErr(err2)
+	err := engine.Table(new(User)).Cols("ID").Find(&ids)
+	checkErr(err)
 	log.Println("查出IDs:", ids)
 }
 
-func exist(engine *xorm.Engine) {
+func exist() {
 	// Exist 判断是否存在
-	has1, err := engine.Exist(&User{
+	has, err = engine.Exist(&User{
 		UserName: "root",
 	})
 	checkErr(err)
-	log.Println("数据是否存在:", has1)
-	has2, err := engine.Where("UserName = ?", "root").Exist(&User{})
+	log.Println("数据是否存在:", has)
+	has, err = engine.Where("UserName = ?", "root").Exist(&User{})
 	checkErr(err)
-	log.Println("数据是否存在:", has2)
-	has3, err := engine.Table(new(User)).Where("UserName = ?", "root").Exist()
+	log.Println("数据是否存在:", has)
+	has, err = engine.Table(new(User)).Where("UserName = ?", "root").Exist()
 	checkErr(err)
-	log.Println("数据是否存在:", has3)
+	log.Println("数据是否存在:", has)
 }
 
-func update(engine *xorm.Engine) {
+func update() {
 
 	// user := &User{
 	// 	UserName: "update",
@@ -146,24 +150,24 @@ func update(engine *xorm.Engine) {
 	user.UserPwd = "update"
 
 	// 非0值更新
-	affected1, err := engine.ID(1).Update(user)
+	affected, err = engine.ID(1).Update(user)
 	checkErr(err)
-	log.Println("更新", affected1, "条数据")
+	log.Println("更新", affected, "条数据")
 
 	// 指定列更新
-	affected2, err := engine.ID(2).Cols("UserName").Update(user)
+	affected, err = engine.ID(2).Cols("UserName").Update(user)
 	checkErr(err)
-	log.Println("更新", affected2, "条数据")
+	log.Println("更新", affected, "条数据")
 
 	// map更新
-	affected3, err := engine.Table(new(User)).ID(3).Update(map[string]interface{}{"UserPwd": "update"})
+	affected, err = engine.Table(new(User)).ID(3).Update(map[string]interface{}{"UserPwd": "update"})
 	checkErr(err)
-	log.Println("更新", affected3, "条数据")
+	log.Println("更新", affected, "条数据")
 }
 
-func del(engine *xorm.Engine, id int) {
+func del(id int) {
 	user := new(User)
-	affected, err := engine.ID(id).Delete(user)
+	affected, err = engine.ID(id).Delete(user)
 	checkErr(err)
 	log.Println("删除ID为", id, "的", affected, "条数据")
 }
