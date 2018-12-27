@@ -14,10 +14,12 @@ func main() {
 	checkErr(err)
 	defer conn.Close()
 
+	// 开启三个goroutine订阅redis
 	go subScribe()
 	go subScribe()
 	go subScribe()
 
+	// 从控制台获取内容发布到redis
 	for {
 		var s string
 		fmt.Scanln(&s)
@@ -29,6 +31,7 @@ func main() {
 	}
 }
 
+// 订阅
 func subScribe() {
 	conn, err := redis.Dial("tcp", "192.168.2.99:6379")
 	checkErr(err)
