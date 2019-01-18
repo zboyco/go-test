@@ -21,7 +21,7 @@ func main() {
 	config.Producer.Return.Errors = true
 
 	// 设置订阅者分配方式
-	// 	sarama.NewManualPartitioner //返回一个手动选择分区的分割器,也就是获取msg中指定的`partition`
+	// sarama.NewManualPartitioner //返回一个手动选择分区的分割器,也就是获取msg中指定的`partition`
 	// sarama.NewRandomPartitioner //通过随机函数随机获取一个分区号
 	// sarama.NewRoundRobinPartitioner //环形选择,也就是在所有分区中循环选择一个
 	// sarama.NewHashPartitioner //通过msg中的key生成hash值,选择分区

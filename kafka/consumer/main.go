@@ -18,14 +18,19 @@ func main() {
 }
 
 func NewConsumer(consumerId string) {
-	brokers := []string{"localhost:9092"}
-	topics := []string{"test"}
-
 	config := cluster.NewConfig()
+	// 返回错误
 	config.Consumer.Return.Errors = true
+	// offsets提交间隔
 	config.Consumer.Offsets.CommitInterval = 1 * time.Second
+	// 默认从最新的offsets开始获取
 	config.Consumer.Offsets.Initial = sarama.OffsetNewest
 	config.Group.Return.Notifications = true
+
+	brokers := []string{"localhost:9092"}
+	// kafka地址
+	topics := []string{"test"}
+	// 话题
 
 	// 第二个参数是groupId
 	consumer, err := cluster.NewConsumer(brokers, "consumer-group1", topics, config)
