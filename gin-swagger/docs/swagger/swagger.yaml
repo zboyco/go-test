@@ -1,0 +1,35 @@
+basePath: /
+host: '{{.Host}}'
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  license: {}
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /news:
+    get:
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
+      - description: CreatedBy
+        in: query
+        name: created_by
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            $ref: '#/definitions/json'
+            type: object
+      summary: 获取文章
+swagger: "2.0"
