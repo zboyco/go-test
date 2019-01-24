@@ -13,8 +13,15 @@ type User struct {
 	ID        int `xorm:"pk autoincr"`
 	UserName  string
 	UserPwd   string
+	Content   *Content  `xorm:"json"`
 	CreatedAt time.Time `xorm:"created"`
 	Flag      int
+}
+
+type Content struct {
+	Age  int
+	Sex  int
+	City string
 }
 
 var engine *xorm.Engine
@@ -25,7 +32,7 @@ var has bool
 func main() {
 
 	// 新建orm引擎
-	engine, err = xorm.NewEngine("mysql", "root:tamanya233@tcp(192.168.2.100:3307)/XormTest?charset=utf8")
+	engine, err = xorm.NewEngine("mysql", "root:tamanya233@tcp(192.168.2.99:3306)/Test?charset=utf8")
 
 	// 有错退出
 	checkErr(err)
@@ -34,6 +41,7 @@ func main() {
 	engine.SetMapper(core.SameMapper{})
 
 	// 插入
+	// insert()
 	insertID := insert()
 
 	// // 查询
@@ -62,7 +70,12 @@ func insert() int {
 	newUser := User{
 		UserName: "root",
 		UserPwd:  "test",
-		Flag:     1,
+		Content: &Content{
+			Age:  18,
+			City: "Chengdu",
+			Sex:  1,
+		},
+		Flag: 1,
 	}
 	affected, err = engine.Insert(&newUser)
 	if err != nil {
@@ -96,7 +109,7 @@ func query() {
 	var users []User
 	engine.Where("UserName = ?", "root").Find(&users)
 	for _, item := range users {
-		log.Println("查出数据:", item)
+		log.Println("查出数据:", item, item.Content.City)
 	}
 
 	// find 获取多条 结构体中已有的非空数据来获得
@@ -148,6 +161,11 @@ func update() {
 
 	user.UserName = "update"
 	user.UserPwd = "update"
+	user.Content = &Content{
+		Age:  18,
+		City: "Chongqing",
+		Sex:  0,
+	}
 
 	// 非0值更新
 	affected, err = engine.ID(1).Update(user)
@@ -155,7 +173,7 @@ func update() {
 	log.Println("更新", affected, "条数据")
 
 	// 指定列更新
-	affected, err = engine.ID(2).Cols("UserName").Update(user)
+	affected, err = engine.ID(2).Cols("Content").Update(user)
 	checkErr(err)
 	log.Println("更新", affected, "条数据")
 
