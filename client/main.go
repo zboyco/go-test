@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("start")
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:9043")
 		checkErr(err)
 		conn, err := net.DialTCP("tcp", nil, tcpAddr)
