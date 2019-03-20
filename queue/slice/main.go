@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/zboyco/go-test/queue/queue"
+	"github.com/zboyco/go-test/queue/slice/queue"
 )
 
 func main() {
