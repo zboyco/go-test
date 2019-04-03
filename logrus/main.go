@@ -2,17 +2,16 @@ package main
 
 import (
 	"strconv"
-
-	"github.com/sirupsen/logrus"
+	"time"
 )
 
 func main() {
-	logrus.Println("hello world")
 
-	log := NewLogger()
+	log := NewLoggerWithRotate()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 180; i++ {
 		log.Infoln("this is a info log , id : " + strconv.Itoa(i))
+		time.Sleep(time.Second)
 	}
 
 	log.Panicln("this is a panic log!")
