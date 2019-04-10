@@ -19,4 +19,6 @@ func main() {
 	m2.exec(0)
 	var m3 A = new(SubA)
 	m3.exec(0)
+	m4 := SubA{}
+	m4.exec(0) // go 内部 调用 (&m4).exec()，但是依然没有实现A接口
 }
