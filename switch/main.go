@@ -11,6 +11,7 @@ func main() {
 		log.Println("0")
 	case 1, 10:
 		log.Println("1")
+		fallthrough // 贯穿
 	case 2, 20:
 		log.Println("2")
 	}
