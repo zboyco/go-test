@@ -16,41 +16,26 @@ func NewTree(values ...int) (*TreeNode, error) {
 	if len(values) <= 0 {
 		return nil, errors.New("length error")
 	}
-	rootNode := &TreeNode{
-		Value: values[0],
-	}
-	for i, lenght := 1, len(values); i < lenght; i++ {
-		rootNode.setChildren(values[i])
+	var rootNode *TreeNode
+	for i := range values {
+		rootNode = rootNode.pushValue(values[i])
 	}
 	return rootNode, nil
 }
 
-func (node *TreeNode) setChildren(value int) {
-	if value <= node.Value {
-		node.setLeft(value)
-	} else {
-		node.setRight(value)
-	}
-}
-
-func (node *TreeNode) setLeft(value int) {
-	if node.LeftNode != nil {
-		node.LeftNode.setChildren(value)
-	} else {
-		node.LeftNode = &TreeNode{
+func (node *TreeNode) pushValue(value int) *TreeNode {
+	if node == nil {
+		node = &TreeNode{
 			Value: value,
 		}
-	}
-}
-
-func (node *TreeNode) setRight(value int) {
-	if node.RightNode != nil {
-		node.RightNode.setChildren(value)
 	} else {
-		node.RightNode = &TreeNode{
-			Value: value,
+		if value <= node.Value {
+			node.LeftNode = node.LeftNode.pushValue(value)
+		} else {
+			node.RightNode = node.RightNode.pushValue(value)
 		}
 	}
+	return node
 }
 
 // FrontForeach 先序遍历
@@ -73,13 +58,13 @@ func (node *TreeNode) MidForeach() {
 	node.RightNode.MidForeach()
 }
 
-// AfterForeach 后续遍历
-func (node *TreeNode) AfterForeach() {
+// BehindForeach 后续遍历
+func (node *TreeNode) BehindForeach() {
 	if node == nil {
 		return
 	}
-	node.LeftNode.AfterForeach()
-	node.RightNode.AfterForeach()
+	node.LeftNode.BehindForeach()
+	node.RightNode.BehindForeach()
 	fmt.Printf("%v ", node.Value)
 }
 
@@ -115,7 +100,7 @@ func (node *TreeNode) GetMax() (int, error) {
 	return max, nil
 }
 
-// GetMin 获取最大值
+// GetMin 获取最小值
 func (node *TreeNode) GetMin() (int, error) {
 	if node == nil {
 		return 0, errors.New("none")
@@ -143,7 +128,7 @@ func main() {
 	fmt.Println()
 	tree.MidForeach()
 	fmt.Println()
-	tree.AfterForeach()
+	tree.BehindForeach()
 	fmt.Println()
 	fmt.Print("当前树深度: ")
 	fmt.Println(tree.GetHeight())
